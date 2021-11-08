@@ -190,8 +190,8 @@ let vertexShader = `
 // **             Application processing               **
 // ******************************************************
 
-let bgColor = vec4.fromValues(1.0, 0.2, 0.3, 1.0);
-let fgColor = vec4.fromValues(1.0, 0.9, 0.5, 1.0);
+let bgColor = vec4.fromValues(.8, .6, 0.05, 1.0);
+let fgColor = vec4.fromValues(.1, 0.2, 0.9, 1.0);
 
 
 app.clearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3])
@@ -208,6 +208,8 @@ let vertexArray = app.createVertexArray()
 let projMatrix = mat4.create();
 let viewMatrix = mat4.create();
 let viewProjMatrix = mat4.create();
+let viewProjMatrixScale = mat4.create();
+let viewProjMatrixScal2 = mat4.create();
 let modelMatrix = mat4.create();
 let modelViewMatrix = mat4.create();
 let modelViewProjectionMatrix = mat4.create();
@@ -225,12 +227,13 @@ let startTime = new Date().getTime() / 1000;
 function draw() {
     let time = new Date().getTime() / 1000 - startTime;
 
-    mat4.perspective(projMatrix, Math.PI / 4, app.width / app.height, 0.1, 100.0);
-    mat4.lookAt(viewMatrix, vec3.fromValues(3, 0, 2), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
-    mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
+    mat4.perspective(projMatrix, Math.PI / 8, app.width / app.height, 0.1, 100.0);
+    mat4.lookAt(viewMatrix, vec3.fromValues(time % 8 * 5, 0, 8), vec3.fromValues(Math.sin(time / 2), .5, 0), vec3.fromValues(0, 1, 0));
+    mat4.scale(viewProjMatrixScale, projMatrix, vec3.fromValues(time % 2, time % 4, 1));
+    mat4.multiply(viewProjMatrix, viewProjMatrixScale, viewMatrix);
 
-    mat4.fromXRotation(rotateXMatrix, time * 0.1136);
-    mat4.fromYRotation(rotateYMatrix, time * 0.2235);
+    mat4.fromXRotation(rotateXMatrix, time);
+    mat4.fromYRotation(rotateYMatrix, time * 2);
     mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
 
     mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);

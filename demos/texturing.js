@@ -60,7 +60,7 @@ let vertexShader = `
     void main()
     {
         gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);           
-        v_uv = uv;
+        v_uv = uv * 1.8;
     }
 `;
 
@@ -78,7 +78,7 @@ let skyboxFragmentShader = `
     
     void main() {
       vec4 t = viewProjectionInverse * v_position;
-      outColor = texture(cubemap, normalize(t.xyz / t.w));
+      outColor = texture(cubemap, normalize(t.xyz / t.w)) * vec4(.8, .2, .2, 1);
     }
 `;
 
@@ -127,10 +127,10 @@ async function loadTexture(fileName) {
 (async () => {
     const tex = await loadTexture("abstract.jpg");
     let drawCall = app.createDrawCall(program, vertexArray)
-        .texture("tex", app.createTexture2D(tex, tex.width, tex.height, {
-            magFilter: PicoGL.LINEAR,
-            minFilter: PicoGL.LINEAR_MIPMAP_LINEAR,
-            maxAnisotropy: 10,
+        .texture("tex", app.createTexture2D(tex, 10, tex.height, {
+            magFilter: PicoGL.NEAREST,
+            minFilter: 200,
+            maxAnisotropy: PicoGL.WEBGL_INFO.maxAnisotropy,
             wrapS: PicoGL.REPEAT,
             wrapT: PicoGL.REPEAT
         }));
@@ -152,7 +152,7 @@ async function loadTexture(fileName) {
         let time = new Date().getTime() / 1000 - startTime;
 
         mat4.perspective(projMatrix, Math.PI / 2, app.width / app.height, 0.1, 100.0);
-        let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(0, 0.5, 2), vec3.fromValues(0, 0, 0), time * 0.05);
+        let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(2, Math.sin(time), 2), vec3.fromValues(0, 2, 0), time * .5);
         mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
 
