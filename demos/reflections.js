@@ -34,10 +34,10 @@ let fragmentShader = `
     void main()
     {        
         vec3 reflectedDir = reflect(viewDir, normalize(vNormal));
-        outColor = texture(cubemap, reflectedDir);
+        //outColor = texture(cubemap, reflectedDir);
         
         // Try using a higher mipmap LOD to get a rough material effect without any performance impact
-        //outColor = textureLod(cubemap, reflectedDir, 7.0);
+        outColor = textureLod(cubemap, reflectedDir, 4.0);
     }
 `;
 
@@ -85,8 +85,8 @@ let mirrorFragmentShader = `
         vec2 screenPos = gl_FragCoord.xy / screenSize;
         
         // 0.03 is a mirror distortion factor, try making a larger distortion         
-        screenPos.x += (texture(distortionMap, vUv).r - 0.5) * 0.03;
-        outColor = texture(reflectionTex, screenPos);
+        screenPos.x += (texture(distortionMap, vUv).r - 0.5) * 0.2;
+        outColor = texture(reflectionTex, screenPos) * vec4(.8, .9, .8, .1);
     }
 `;
 
@@ -158,7 +158,7 @@ let mirrorArray = app.createVertexArray()
     .indexBuffer(app.createIndexBuffer(PicoGL.UNSIGNED_INT, 3, mirrorIndices));
 
 // Change the reflection texture resolution to checkout the difference
-let reflectionResolutionFactor = 0.3;
+let reflectionResolutionFactor = .9;
 let reflectionColorTarget = app.createTexture2D(app.width * reflectionResolutionFactor, app.height * reflectionResolutionFactor, {magFilter: PicoGL.LINEAR});
 let reflectionDepthTarget = app.createTexture2D(app.width * reflectionResolutionFactor, app.height * reflectionResolutionFactor, {internalFormat: PicoGL.DEPTH_COMPONENT16});
 let reflectionBuffer = app.createFramebuffer().colorTarget(0, reflectionColorTarget).depthTarget(reflectionDepthTarget);
@@ -227,7 +227,7 @@ async function loadTexture(fileName) {
 
     let mirrorDrawCall = app.createDrawCall(mirrorProgram, mirrorArray)
         .texture("reflectionTex", reflectionColorTarget)
-        .texture("distortionMap", app.createTexture2D(await loadTexture("noise.png")));
+        .texture("distortionMap", app.createTexture2D(await loadTexture("jahySama.jpg")));
 
     function renderReflectionTexture()
     {

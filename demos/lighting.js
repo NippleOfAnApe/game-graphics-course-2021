@@ -1,15 +1,15 @@
 import PicoGL from "../node_modules/picogl/build/module/picogl.js";
 import {mat4, vec3} from "../node_modules/gl-matrix/esm/index.js";
 
-import {positions, normals, indices} from "../blender/monkey.js"
+import {positions, normals, uvs, indices} from "../blender/sword.js"
 
 // ******************************************************
 // **               Light configuration                **
 // ******************************************************
 
-let ambientLightColor = vec3.fromValues(0.05, 0.05, 0.1);
+let ambientLightColor = vec3.fromValues(.1, .1, .8);
 let numberOfLights = 2;
-let lightColors = [vec3.fromValues(1.0, 0.0, 0.2), vec3.fromValues(0.0, 0.1, 0.2)];
+let lightColors = [vec3.fromValues(.9, .8, .9), vec3.fromValues(.9, .4, .3)];
 let lightInitialPositions = [vec3.fromValues(5, 0, 2), vec3.fromValues(-5, 0, 2)];
 let lightPositions = [vec3.create(), vec3.create()];
 
@@ -50,15 +50,20 @@ let fragmentShader = `
     precision highp float;        
     ${lightCalculationShader}        
     
-    in vec3 vPosition;    
+    uniform sampler2D tex;      // Uniform means public?
+    
+    in vec3 vPosition;          // Where do we initialize these values?
     in vec3 vNormal;
     in vec4 vColor;    
-    
+    in vec2 v_uv;
+
+
     out vec4 outColor;        
     
     void main() {                      
         // For Phong shading (per-fragment) move color calculation from vertex to fragment shader
         outColor = calculateLights(normalize(vNormal), vPosition);
+        //outColor = calculateLights(normalize(vNormal), vPosition) * texture(tex, v_uv);       // Doesn't work
         // outColor = vColor;
     }
 `;
@@ -77,6 +82,7 @@ let vertexShader = `
     out vec3 vPosition;    
     out vec3 vNormal;
     out vec4 vColor;
+    //out vec2 v_uv;
     
     void main() {
         vec4 worldPosition = modelMatrix * position;
@@ -87,7 +93,8 @@ let vertexShader = `
         // For Gouraud shading (per-vertex) move color calculation from fragment to vertex shader
         //vColor = calculateLights(normalize(vNormal), vPosition);
         
-        gl_Position = viewProjectionMatrix * worldPosition;                        
+        gl_Position = viewProjectionMatrix * worldPosition;  
+        //v_uv = uv * 1.0;
     }
 `;
 
@@ -100,47 +107,66 @@ let program = app.createProgram(vertexShader.trim(), fragmentShader.trim());
 let vertexArray = app.createVertexArray()
     .vertexAttributeBuffer(0, app.createVertexBuffer(PicoGL.FLOAT, 3, positions))
     .vertexAttributeBuffer(1, app.createVertexBuffer(PicoGL.FLOAT, 3, normals))
+    .vertexAttributeBuffer(2, app.createVertexBuffer(PicoGL.FLOAT, 2, uvs))
     .indexBuffer(app.createIndexBuffer(PicoGL.UNSIGNED_INT, 3, indices));
 
 let projectionMatrix = mat4.create();
 let viewMatrix = mat4.create();
 let viewProjectionMatrix = mat4.create();
 let modelMatrix = mat4.create();
+let rotateYMatrix = mat4.create();
+let needlesOperator = mat4.create();
 
-let drawCall = app.createDrawCall(program, vertexArray)
-    .uniform("ambientLightColor", ambientLightColor);
-
-let startTime = new Date().getTime() / 1000;
-
-let cameraPosition = vec3.fromValues(0, 0, 5);
-mat4.fromXRotation(modelMatrix, -Math.PI / 2);
-
-const positionsBuffer = new Float32Array(numberOfLights * 3);
-const colorsBuffer = new Float32Array(numberOfLights * 3);
-
-function draw() {
-    let time = new Date().getTime() / 1000 - startTime;
-
-    mat4.perspective(projectionMatrix, Math.PI / 4, app.width / app.height, 0.1, 100.0);
-    mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
-    mat4.multiply(viewProjectionMatrix, projectionMatrix, viewMatrix);
-
-    drawCall.uniform("viewProjectionMatrix", viewProjectionMatrix);
-    drawCall.uniform("modelMatrix", modelMatrix);
-    drawCall.uniform("cameraPosition", cameraPosition);
-
-    for (let i = 0; i < numberOfLights; i++) {
-        vec3.rotateZ(lightPositions[i], lightInitialPositions[i], vec3.fromValues(0, 0, 0), time);
-        positionsBuffer.set(lightPositions[i], i * 3);
-        colorsBuffer.set(lightColors[i], i * 3);
-    }
-
-    drawCall.uniform("lightPositions[0]", positionsBuffer);
-    drawCall.uniform("lightColors[0]", colorsBuffer);
-
-    app.clear();
-    drawCall.draw();
-
-    requestAnimationFrame(draw);
+async function loadTexture(fileName) {
+    return await createImageBitmap(await (await fetch("images/" + fileName)).blob());
 }
-requestAnimationFrame(draw);
+
+(async () => {
+    const tex = await loadTexture("stingColor.png");
+    let drawCall = app.createDrawCall(program, vertexArray)             // How do I adjust a texture to fit a coplex shape?
+        .texture("tex", app.createTexture2D(tex, 10, tex.height, {
+            magFilter: PicoGL.NEAREST,
+            minFilter: 200,
+            maxAnisotropy: PicoGL.WEBGL_INFO.maxAnisotropy,
+            wrapS: PicoGL.REPEAT,
+            wrapT: PicoGL.REPEAT
+        }));
+
+    let startTime = new Date().getTime() / 1000;
+
+    let cameraPosition = vec3.fromValues(0, 0, 100);
+    mat4.fromXRotation(modelMatrix, -Math.PI / 2);
+
+    const positionsBuffer = new Float32Array(numberOfLights * 3);
+    const colorsBuffer = new Float32Array(numberOfLights * 3);
+
+    function draw() {
+        let time = new Date().getTime() / 1000 - startTime;
+
+        mat4.perspective(projectionMatrix, Math.PI / 4, app.width / app.height, 0.1, 200.0);
+        mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+        mat4.multiply(viewProjectionMatrix, projectionMatrix, viewMatrix);
+
+        mat4.fromYRotation(rotateYMatrix, time);
+        mat4.multiply(needlesOperator, rotateYMatrix, viewProjectionMatrix);
+
+        drawCall.uniform("viewProjectionMatrix", needlesOperator);      // I think here
+        drawCall.uniform("modelMatrix", modelMatrix);
+        drawCall.uniform("cameraPosition", cameraPosition);
+
+        for (let i = 0; i < numberOfLights; i++) {
+            vec3.rotateZ(lightPositions[i], lightInitialPositions[i], vec3.fromValues(0, 0, 0), time);
+            positionsBuffer.set(lightPositions[i], i * 3);
+            colorsBuffer.set(lightColors[i], i * 3);
+        }
+
+        drawCall.uniform("lightPositions[0]", positionsBuffer);
+        drawCall.uniform("lightColors[0]", colorsBuffer);
+
+        app.clear();
+        drawCall.draw();
+
+        requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+})();
