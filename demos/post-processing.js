@@ -232,6 +232,7 @@ async function loadTexture(fileName) {
 
         app.disable(PicoGL.DEPTH_TEST)
            .disable(PicoGL.CULL_FACE);
+           
         postDrawCall.uniform("time", time);
         postDrawCall.draw();
     }

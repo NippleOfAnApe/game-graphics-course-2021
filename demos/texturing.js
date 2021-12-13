@@ -13,7 +13,7 @@
 import PicoGL from "../node_modules/picogl/build/module/picogl.js";
 import {mat4, vec3} from "../node_modules/gl-matrix/esm/index.js";
 
-import {positions, normals, uvs, indices} from "../blender/sword.js"
+import {positions, normals, uvs, indices} from "../blender/girlUV.js"
 
 const skyboxPositions = new Float32Array([
     -1.0, 1.0, 1.0,
@@ -41,6 +41,7 @@ let fragmentShader = `
     
     void main()
     {        
+        //outColor = vec4(.2, .8, .2, 1);
         outColor = texture(tex, v_uv);
     }
 `;
@@ -59,8 +60,8 @@ let vertexShader = `
     
     void main()
     {
-        gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);           
-        v_uv = uv * 1.8;
+        gl_Position = modelViewProjectionMatrix * vec4(position, 2.0);           
+        v_uv = uv * 1.0;
     }
 `;
 
@@ -116,8 +117,8 @@ let viewProjMatrix = mat4.create();
 let modelMatrix = mat4.create();
 let modelViewMatrix = mat4.create();
 let modelViewProjectionMatrix = mat4.create();
-let rotateXMatrix = mat4.create();
-let rotateYMatrix = mat4.create();
+// let rotateXMatrix = mat4.create();
+// let rotateYMatrix = mat4.create();
 let skyboxViewProjectionInverse = mat4.create();
 
 async function loadTexture(fileName) {
@@ -125,12 +126,12 @@ async function loadTexture(fileName) {
 }
 
 (async () => {
-    const tex = await loadTexture("stingColor.png");
+    const tex = await loadTexture("marble.jpg");
     let drawCall = app.createDrawCall(program, vertexArray)
         .texture("tex", app.createTexture2D(tex, tex.width, tex.height, {
             magFilter: PicoGL.LINEAR,
             minFilter: PicoGL.LINEAR_MIPMAP_LINEAR,
-            maxAnisotropy: 10,
+            maxAnisotropy: 80,
             wrapS: PicoGL.REPEAT,
             wrapT: PicoGL.REPEAT
         }));
@@ -151,14 +152,15 @@ async function loadTexture(fileName) {
     function draw() {
         let time = new Date().getTime() / 1000 - startTime;
 
-        mat4.perspective(projMatrix, Math.PI / 2, app.width / app.height, 0.1, 100.0);
-        let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(20, Math.sin(time), 2), vec3.fromValues(0, 2, 0), time * .5);
+        mat4.perspective(projMatrix, Math.PI / 4, app.width / app.height, 0.1, 400.0);
+        //let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(60, Math.sin(time), 2), vec3.fromValues(0, 2, 0), time * .5);
+        let camPos = vec3.rotateY(vec3.create(), vec3.fromValues(100, 10, 0), vec3.fromValues(0, 0, 0), time * .1);
         mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
 
-        mat4.fromXRotation(rotateXMatrix, time * 0.1136);
-        mat4.fromZRotation(rotateYMatrix, time * 0.2235);
-        mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
+        mat4.fromYRotation(modelMatrix, time * 0.3);
+        // mat4.fromZRotation(rotateYMatrix, time * 0.2235);
+        // mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
 
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
         mat4.multiply(modelViewProjectionMatrix, viewProjMatrix, modelMatrix);

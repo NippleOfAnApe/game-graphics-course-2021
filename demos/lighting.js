@@ -1,15 +1,15 @@
 import PicoGL from "../node_modules/picogl/build/module/picogl.js";
 import {mat4, vec3} from "../node_modules/gl-matrix/esm/index.js";
 
-import {positions, normals, uvs, indices} from "../blender/sword.js"
+import {positions, normals, uvs, indices} from "../blender/sphere.js"
 
 // ******************************************************
 // **               Light configuration                **
 // ******************************************************
 
-let ambientLightColor = vec3.fromValues(.1, .1, .8);
+let ambientLightColor = vec3.fromValues(.2, .2, .8);
 let numberOfLights = 2;
-let lightColors = [vec3.fromValues(.9, .8, .9), vec3.fromValues(.9, .4, .3)];
+let lightColors = [vec3.fromValues(.9, .2, .2), vec3.fromValues(.2, .9, .2)];
 let lightInitialPositions = [vec3.fromValues(5, 0, 2), vec3.fromValues(-5, 0, 2)];
 let lightPositions = [vec3.create(), vec3.create()];
 
@@ -17,7 +17,8 @@ let lightPositions = [vec3.create(), vec3.create()];
 // language=GLSL
 let lightCalculationShader = `
     uniform vec3 cameraPosition;
-    uniform vec3 ambientLightColor;    
+    //uniform vec3 ambientLightColor[${ambientLightColor}];
+    uniform vec3 ambientLightColor;
     uniform vec3 lightColors[${numberOfLights}];        
     uniform vec3 lightPositions[${numberOfLights}];
     
@@ -81,7 +82,7 @@ let vertexShader = `
     
     out vec3 vPosition;    
     out vec3 vNormal;
-    out vec4 vColor;
+    //out vec4 vColor;
     //out vec2 v_uv;
     
     void main() {
@@ -122,19 +123,12 @@ async function loadTexture(fileName) {
 }
 
 (async () => {
-    const tex = await loadTexture("stingColor.png");
-    let drawCall = app.createDrawCall(program, vertexArray)             // How do I adjust a texture to fit a coplex shape?
-        .texture("tex", app.createTexture2D(tex, 10, tex.height, {
-            magFilter: PicoGL.NEAREST,
-            minFilter: 200,
-            maxAnisotropy: PicoGL.WEBGL_INFO.maxAnisotropy,
-            wrapS: PicoGL.REPEAT,
-            wrapT: PicoGL.REPEAT
-        }));
+    let drawCall = app.createDrawCall(program, vertexArray)
+    .uniform("ambientLightColor", ambientLightColor);
 
     let startTime = new Date().getTime() / 1000;
 
-    let cameraPosition = vec3.fromValues(0, 0, 100);
+    let cameraPosition = vec3.fromValues(0, 0, 4);
     mat4.fromXRotation(modelMatrix, -Math.PI / 2);
 
     const positionsBuffer = new Float32Array(numberOfLights * 3);
@@ -147,7 +141,7 @@ async function loadTexture(fileName) {
         mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         mat4.multiply(viewProjectionMatrix, projectionMatrix, viewMatrix);
 
-        mat4.fromYRotation(rotateYMatrix, time);
+        //mat4.fromYRotation(rotateYMatrix, time);
         mat4.multiply(needlesOperator, rotateYMatrix, viewProjectionMatrix);
 
         drawCall.uniform("viewProjectionMatrix", needlesOperator);      // I think here
@@ -155,7 +149,7 @@ async function loadTexture(fileName) {
         drawCall.uniform("cameraPosition", cameraPosition);
 
         for (let i = 0; i < numberOfLights; i++) {
-            vec3.rotateZ(lightPositions[i], lightInitialPositions[i], vec3.fromValues(0, 0, 0), time);
+            vec3.rotateZ(lightPositions[i], lightInitialPositions[i], vec3.fromValues(0, 0, 0), time * 4.0);
             positionsBuffer.set(lightPositions[i], i * 3);
             colorsBuffer.set(lightColors[i], i * 3);
         }

@@ -3,7 +3,7 @@
 import PicoGL from "../node_modules/picogl/build/module/picogl.js";
 import {mat4, vec3, mat3, vec4, vec2} from "../node_modules/gl-matrix/esm/index.js";
 
-import {positions, normals, indices} from "../blender/cube.js"
+import {positions, normals, indices} from "../blender/torus.js"
 import {positions as mirrorPositions, uvs as mirrorUvs, indices as mirrorIndices} from "../blender/plane.js"
 
 let skyboxPositions = new Float32Array([
@@ -85,8 +85,8 @@ let mirrorFragmentShader = `
         vec2 screenPos = gl_FragCoord.xy / screenSize;
         
         // 0.03 is a mirror distortion factor, try making a larger distortion         
-        screenPos.x += (texture(distortionMap, vUv).r - 0.5) * 0.2;
-        outColor = texture(reflectionTex, screenPos) * vec4(.8, .9, .8, .1);
+        screenPos.x += (texture(distortionMap, vUv).r - 0.5) * .9;
+        outColor = texture(reflectionTex, screenPos) * vec4(.8, .9, .8, .9);
     }
 `;
 
@@ -104,6 +104,7 @@ let mirrorVertexShader = `
     void main()
     {
         vUv = uv;
+        //gl_Position = modelViewProjectionMatrix * vec4(position, 0.2);           
         gl_Position = modelViewProjectionMatrix * position;           
     }
 `;
@@ -211,12 +212,12 @@ async function loadTexture(fileName) {
 
 (async () => {
     const cubemap = app.createCubemap({
-        negX: await loadTexture("stormydays_bk.png"),
-        posX: await loadTexture("stormydays_ft.png"),
-        negY: await loadTexture("stormydays_dn.png"),
-        posY: await loadTexture("stormydays_up.png"),
-        negZ: await loadTexture("stormydays_lf.png"),
-        posZ: await loadTexture("stormydays_rt.png")
+        negX: await loadTexture("ahegao1.jpg"),
+        posX: await loadTexture("ahegao1.jpg"),
+        negY: await loadTexture("ahegao1.jpg"),
+        posY: await loadTexture("ahegao1.jpg"),
+        negZ: await loadTexture("ahegao1.jpg"),
+        posZ: await loadTexture("ahegao1.jpg")
     });
 
     let drawCall = app.createDrawCall(program, vertexArray)
@@ -286,11 +287,11 @@ async function loadTexture(fileName) {
     function draw() {
         let time = new Date().getTime() * 0.001;
 
-        mat4.perspective(projMatrix, Math.PI / 2.5, app.width / app.height, 0.1, 100.0);
+        mat4.perspective(projMatrix, Math.PI / 2, app.width / app.height, 0.1, 100.0);
         vec3.rotateY(cameraPosition, vec3.fromValues(0, 3, 3.5), vec3.fromValues(0, 0, 0), time * 0.05);
         mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, -0.5, 0), vec3.fromValues(0, 1, 0));
 
-        mat4.fromXRotation(rotateXMatrix, time * 0.1136 - Math.PI / 2);
+        mat4.fromXRotation(rotateXMatrix, time * 0.1136);
         mat4.fromZRotation(rotateYMatrix, time * 0.2235);
         mat4.mul(modelMatrix, rotateXMatrix, rotateYMatrix);
 
