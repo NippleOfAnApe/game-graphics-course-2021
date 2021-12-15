@@ -179,7 +179,7 @@ let skyboxFragmentShader = `
     
     void main() {
       vec4 t = viewProjectionInverse * v_position;
-      outColor = texture(cubemap, normalize(t.xyz / t.w)) * vec4(.5, .5, time, .1);
+      outColor = texture(cubemap, normalize(t.xyz / t.w)) * vec4(.7, time, .7, .1);
     }
 `;
 
@@ -249,16 +249,16 @@ let postFragmentShader = `
         //col.b = texture(tex, v_position.xy + caOffset).b;
         
         // Depth of field
-        col = depthOfField(col, depth, v_position.xy);
+        //col = depthOfField(col, depth, v_position.xy);
 
         // Noise         
-        col.rgb += (2.0 - col.rgb) * random(v_position.xy) * 0.1;
+        //col.rgb += (2.0 - col.rgb) * random(v_position.xy) * 0.1;
         
         // Contrast + Brightness
         col = pow(col, vec4(1.8)) * 0.8;
         
         // Color curves
-        col.rgb = col.rgb * vec3(1.2, 1.1, 1.0) + vec3(0.0, 0.05, 0.2);
+        //col.rgb = col.rgb * vec3(1.2, 1.1, 1.0) + vec3(0.0, 0.05, 0.2);
         
         // Ambient Occlusion
         //col = ambientOcclusion(col, depth, v_position.xy);                
@@ -485,18 +485,23 @@ async function loadTexture(fileName) {
         mat4.mul(mirrorModelMatrix, rotateYMatrix, rotateXMatrix);
         mat4.translate(mirrorModelMatrix, mirrorModelMatrix, vec3.fromValues(0, -1, 0));
 
+
+        renderReflectionTexture();
+
         app.drawFramebuffer(buffer);
         app.viewport(0, 0, colorTarget.width, colorTarget.height);
 
-        renderReflectionTexture();
         drawObjects(cameraPosition, viewMatrix);
         drawMirror();
+
+        app.defaultDrawFramebuffer();
+        app.defaultViewport();
 
         app.disable(PicoGL.DEPTH_TEST)
            .disable(PicoGL.CULL_FACE);
 
         postDrawCall.uniform("time", time);
-        //postDrawCall.draw();          // Whole post procesing thing doesn't work because of something here
+        postDrawCall.draw();
     }
 
     requestAnimationFrame(draw);
