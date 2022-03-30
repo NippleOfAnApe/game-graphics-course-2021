@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <b>👀 Girl on weeb podium 👀</b>
+  <b>👀 Girl on a weeb podium 👀</b>
 </p>
 
-<img src="https://github.com/NippleOfAnApe/game-graphics-course-2021/blob/master/images/ezgif.com-gif-maker.gif" alt="img" align="center" width="600px">
+<img src="https://github.com/NippleOfAnApe/game-graphics-course-2021/blob/master/images/ezgif.com-gif-maker.gif" alt="img" align="center" width="90%">
 
 ### Thanks for dropping by!
 
@@ -18,10 +18,10 @@ This repository contains a webpage, from where there will be links for each of m
 
 ### Tools used:
 
-+ **Editor** VSCodium
-+ **Backend** WebGL
-+ **Frontend** PicoGL (JavaScript)
-+ **3D Modelling** Blender
++ **Editor**: VSCodium
++ **Backend**: WebGL
++ **Frontend**: PicoGL (JavaScript)
++ **3D Modelling**: Blender
 
 ## To get started
 
@@ -29,11 +29,13 @@ This repository contains a webpage, from where there will be links for each of m
     <br/>We will use this to get code dependencies
     
 2. Clone this repo
+    <br>
     git clone https://github.com/NippleOfAnApe/game-graphics-course-2021.git
     
 3. Open cloned repo in VSCode
 
 4. Get code dependencies:
+    <br>
     npm install 
 
 4. Install VSCode "Live Server" extension. Click "Go Live" button in VSCode bottom bar to start a local web server
