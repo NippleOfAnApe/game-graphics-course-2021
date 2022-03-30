@@ -1,65 +1,42 @@
 <p align="center">
-  <img width="25%" src="https://github.com/elenapan.png" />
+  <img width="30%" src="https://github.com/NippleOfAnApe.png" />
 </p>
 
 <p align="center">
-  <b>🎀 Elena's configuration files 🎀</b>
+  <b>👀 Girl on weeb podium 👀</b>
 </p>
 
-<p align="center">
-<a href="#setup"><img width="150px" style="padding: 0 10px;" src=".assets/setup.png"></a>
-<a href="https://github.com/elenapan/dotfiles/wiki"><img width="150px" style="padding: 0 10px;" src=".assets/wiki.png"></a>
-<a href="https://github.com/elenapan/dotfiles/wiki/Gallery"><img width="150px" style="padding: 0 10px;" src=".assets/gallery.png"></a>
-<a href="#tipjar"><img width="150px" style="padding: 0 10px;" src=".assets/tipjar.png"></a>
-</p>
-
+<img src="https://github.com/NippleOfAnApe/game-graphics-course-2021/blob/master/images/ezgif.com-gif-maker.gif" alt="img" align="center" width="600px">
 
 ### Thanks for dropping by!
 
-# Game Graphics Course
+## Game Graphics Course
 
 Video Game Graphics course for Estonian Entrepreneurship University of Applied Sciences, 2021
 
-This repository contains a webpage, which should be checked out and deployed on your local computer. Follow [Setup Instructions](#setup) to get access to course materials, slides, code demos and home assignments.
+This repository contains a webpage, from where there will be links for each of my assignments, my final project as well as lecture materials.
 
-## Setup Instructions<a name="setup"></a>
+### Tools used:
 
-1. Register a GitHub account https://github.com/join
-<br/>This is a code cloud storage
-<br/>Choose any nickname, but please use a real name, so I know who you are :grin:
++ **Editor** VSCodium
++ **Backend** WebGL
++ **Frontend** PicoGL (JavaScript)
++ **3D Modelling** Blender
 
-2. Install tools
+## To get started
 
-    * Install GitHub desktop https://desktop.github.com
-    <br/>Git is a Version Control System - will be used to "download" and "upload" code
-    
-    * Install VSCode https://code.visualstudio.com/Download
-    <br/>This is IDE (Integrated Development Environment) - basically just an advanced text editor, we will use it to write code
-
-    * Install NodeJS https://nodejs.org/en/download
+1. Install NodeJS https://nodejs.org/en/download
     <br/>We will use this to get code dependencies
     
-2. Launch GitHub Desktop and clone ("download") this code repository to your computer
-    <br/>https://github.com/taphos/game-graphics-course-2021
+2. Clone this repo
+    git clone https://github.com/NippleOfAnApe/game-graphics-course-2021.git
     
-3. Open cloned repo in VSCode (GitHub Desktop -> Repository -> Open in VSCode)
+3. Open cloned repo in VSCode
 
-4. Get code dependencies: from VSCode menu Terminal -> New Terminal -> `npm install` 
+4. Get code dependencies:
+    npm install 
 
 4. Install VSCode "Live Server" extension. Click "Go Live" button in VSCode bottom bar to start a local web server
 
 5. Open link in Chrome http://localhost:5500
 
-## Home Assignments
-
-1. Before start, make sure you successfully completed all steps of [Setup Instructions](#setup) above
-2. (Skip first time) Merge the latest changes into your forked repository, using GitHub Desktop 
-    1. Fetch Origin
-    2. Branch -> Merge info current -> upstream/master
-    3. Push origin
-3. Make required changes, depending on the assignment, using VSCode
-4. In GitHub Desktop, verify changed files
-5. Write a meaningful summary message
-6. (First time only) You will be offered to fork repository, agree and create a fork
-7. Commit to main branch of the fork
-8. Press "Push origin" to push changes to GitHub server
