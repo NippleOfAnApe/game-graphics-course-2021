@@ -1,3 +1,21 @@
+<p align="center">
+  <img width="25%" src="https://github.com/elenapan.png" />
+</p>
+
+<p align="center">
+  <b>🎀 Elena's configuration files 🎀</b>
+</p>
+
+<p align="center">
+<a href="#setup"><img width="150px" style="padding: 0 10px;" src=".assets/setup.png"></a>
+<a href="https://github.com/elenapan/dotfiles/wiki"><img width="150px" style="padding: 0 10px;" src=".assets/wiki.png"></a>
+<a href="https://github.com/elenapan/dotfiles/wiki/Gallery"><img width="150px" style="padding: 0 10px;" src=".assets/gallery.png"></a>
+<a href="#tipjar"><img width="150px" style="padding: 0 10px;" src=".assets/tipjar.png"></a>
+</p>
+
+
+### Thanks for dropping by!
+
 # Game Graphics Course
 
 Video Game Graphics course for Estonian Entrepreneurship University of Applied Sciences, 2021
