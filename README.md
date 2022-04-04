@@ -2,11 +2,13 @@
   <img width="25%" src="https://github.com/NippleOfAnApe.png" />
 </p>
 
+![vertical](https://user-images.githubusercontent.com/89152669/161524419-75b9658f-499f-40cb-a537-432eceec66f4.png)
+
 <p align="center">
   <b>👀 Girl on a weeb podium 👀</b>
 </p>
 <br>
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://imgur.com/crnlwxy)
+
 <img src="https://github.com/NippleOfAnApe/game-graphics-course-2021/blob/master/images/ezgif.com-gif-maker.gif" alt="img" align="center" width="95%">
 
 ### Thanks for dropping by!
